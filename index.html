@@ -1,23 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard</title>
-    <link rel="stylesheet" href="./assets/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Weather Dashboard</h1>
-        <input type="text" id="locationInput" placeholder="Enter city or postcode">
-        <button id="searchButton">Get Weather</button>
-        <p id="errorMessage" class="hidden error"></p>
-        <div id="weatherInfo" class="hidden">
-            <h2 id="locationName"></h2>
-            <p><strong>Temperature:</strong> <span id="temperature"></span>°C</p>
-            <p><strong>Condition:</strong> <span id="weatherDescription"></span></p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UKWeather</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="assets/images/wind-favicon.png"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <header class="navbar-custom">
+      <nav
+        class="navbar navbar-dark bg-dark py-2 d-flex justify-content-around"
+      >
+        <div class="input-section container row">
+          <div class="">
+            <a class="navbar-brand col-12 col-lg-2 mb-4 mt-4 mx-4">UKWeather</a>
+            <input
+              class="col-12 col-lg-8 mb-4 mt-4"
+              type="text"
+              id="city"
+              placeholder="Enter city name"
+              required
+            />
+            <button class="navbtn col-12 col-lg-2 mb-4 mt-4" id="getWeather">
+              Get Weather
+            </button>
+          </div>
         </div>
-    </div>
-    <script src="./assets/js/script.js"></script>
-</body>
+      </nav>
+    </header>
+    <!-- Main -->
+
+    <main class="container mt-5">
+
+        <!-- Section banner -->
+          <!-- Top Banner Windy.com -->
+          <div class="container">
+            <div class="jumbotron">
+              <div class="">
+                <iframe
+                  id="windyAPI"
+                  class="w-100"
+                  style="height: 450px"
+                  src="https://embed.windy.com/embed2.html?lat=51.507351&lon=-0.127758&detailLat=51.507351&detailLon=-0.127758&zoom=5&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Section weather-cards -->
+      <section class="weather-cards">
+        <!-- Cards weather results-->
+        <div id="weatherResult" class="weather-result container">
+          <div class="row mt-5 mb-5 mx-0 justify-content-between">
+            <div class="card col-md-3 col-12 mb-4 mb-lg-0 border-0">
+              <div class="card-body">
+                Location
+                <p id="o-city" class="lead text-dark mt-3">City name:</p>
+                <p id="o-lat" class="lead text-dark mt-3">Latitude:</p>
+                <p id="o-lon" class="lead text-dark mt-3">Longitude:</p>
+              </div>
+            </div>
+            <div class="card col-md-3 col-12 mb-4 mb-lg-0 border-0">
+              <div class="card-body">
+                Weather today
+                <p id="o-temp" class="lead text-dark mt-3">Temperature:</p>
+                <i class="fa-solid fa-wind"></i>
+                <p id="o-feelslike" class="lead text-dark mt-3">Feels like:</p>
+                <p id="o-humidity" class="lead text-dark mt-3">Humidity:</p>
+              </div>
+            </div>
+            <div class="card col-md-3 col-12 mb-4 mb-lg-0 border-0">
+              <div class="card-body">
+                Weather today 2
+                <p id="o-weatherdesc" class="lead text-dark mt-3">
+                  Weather description:
+                </p>
+                <i class="fa-solid fa-wind"></i>
+                <p id="o-windspeed" class="lead text-dark mt-3">Windspeed:</p>
+                <!--p class="lead text-dark mt-3">Weekly forecast:</p-->
+              </div>
+            </div>
+            <div class="card col-md-2 col-12 mb-4 mb-lg-0 border-0">
+              <div class="card-body">
+                5-day Forecast
+                <p class="lead text-dark mt-3">Temperature:</p>
+                <p id="o-wfctemp" class="lead text-dark mt-3"></p>
+                <i class="fa-solid fa-wind"></i>
+                <p class="lead text-dark mt-3">Weather:</p>
+                <p id="o-wfcweather" class="lead text-dark mt-3"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="banner-top">
+        <div class="weather-dashboard">
+          <div id="weatherResult" class="weather-result"></div>
+        
+
+      <!--Section  Carousel -->
+      <section class="slider-banner mb-4">
+        <div
+          id="carouselExampleAutoplaying"
+          class="carousel slide mt-5"
+          data-bs-ride="carousel"
+        >
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <img src="assets/images/cloudy-banner.jpg" alt="Los Angeles" />
+              <div class="carousel-caption">
+                <h1>Los Angeles</h1>
+                <h3>We had such a great time in LA!</h3>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="assets/images/sunny-banner.jpg" alt="Los Angeles" />
+              <div class="carousel-caption">
+                <h1>Los Angeles</h1>
+                <h3>We had such a great time in LA!</h3>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="assets/images/snow-mountains.jpg" alt="Los Angeles" />
+              <div class="carousel-caption">
+                <h1>Los Angeles</h1>
+                <h3>We had such a great time in LA!</h3>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <img src="assets/images/dunes.jpg" alt="Los Angeles" />
+              <div class="carousel-caption">
+                <h1>Los Angeles</h1>
+                <h3>We had such a great time in LA!</h3>
+              </div>
+            </div>
+          </div>
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExampleAutoplaying"
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExampleAutoplaying"
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer>
+      <div class="back-to-top">⬆</div>
+      <div class="footer-basic">
+        <ul class="list-inline">
+          <li class="list-inline-item">
+            <a href="#">Contact</a>
+          </li>
+          <li class="list-inline-item"><a href="#">About</a></li>
+          <li class="list-inline-item"><a href="#">Help</a></li>
+        </ul>
+        <p class="copyright">Company Name © 2018</p>
+      </div>
+    </footer>
+    <script src="assets/js/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      type="text/javascript"
+      src="assets/js/back-to-top-button.js"
+    ></script>
+  </body>
 </html>

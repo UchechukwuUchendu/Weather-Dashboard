@@ -1,45 +1,104 @@
 /* script.js */
-document.getElementById('searchButton').addEventListener('click', function() {
-    const location = document.getElementById('locationInput').value.trim();
-    const errorMessage = document.getElementById('errorMessage');
-    const weatherInfo = document.getElementById('weatherInfo');
-    
-    errorMessage.classList.add('hidden');
-    weatherInfo.classList.add('hidden');
 
-    if (!location) {
-        errorMessage.textContent = 'Please enter a location';
-        errorMessage.classList.remove('hidden');
-        return;
-    }
+
+const API_KEY = "f23ee9deb4e1a7450f3157c44ed020e1";
+
+navigator.geolocation.getCurrentPosition(setWindyAPI);
+
+function setWindyAPI(position)
+{
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+    document.getElementById("windyAPI").src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&zoom=5&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+}
+
+document.getElementById("getWeather").addEventListener("click",function(e) {
+    console.clear();
+
+    let city;
+    if(document.getElementById("city").value=="")
+    {navigator.geolocation.getCurrentPosition(findCurrentLocation)} // default
+    else
+    {city = document.getElementById("city").value;
+    let geoURL = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${API_KEY}`;
     
-        fetch(`https://api.openweathermap.org/geo/1.0/direct?q.Southampton&appid.f71ddccb11c58ebbf12f54e59a20fa3cD`)
-        .then(response => response.json())
-        .then(geoData => {
-            if (!geoData.length) {
-                errorMessage.textContent = 'Location not found';
-                errorMessage.classList.remove('hidden');
-                return;
-            }
-            
-            const { lat, lon, name } = geoData[0];
-            return fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=YOUR_API_KEY&units=metric`)
-                .then(response => response.json())
-                .then(weatherData => {
-                    if (weatherData.cod !== 200) {
-                        errorMessage.textContent = 'Unable to retrieve weather data';
-                        errorMessage.classList.remove('hidden');
-                        return;
-                    }
-                    document.getElementById('locationName').textContent = name;
-                    document.getElementById('temperature').textContent = weatherData.main.temp;
-                    document.getElementById('weatherDescription').textContent = weatherData.weather[0].description;
-                    weatherInfo.classList.remove('hidden');
-                });
-        })
-        .catch(error => {
-            errorMessage.textContent = 'Error fetching weather data';
-            errorMessage.classList.remove('hidden');
-            console.error('Error fetching weather data:', error);
-        });
-});
+    fetch(geoURL)
+        .then((response) => response.json())
+        .then((data) => findLocation(data))
+        .catch((error) => console.error("Fetch error:", error));
+    }    
+})
+
+function findLocation(data) {
+
+    console.log(data);
+    data = data[0];
+
+    findWeather(data["lat"], data["lon"]);
+
+}
+
+function findCurrentLocation(position)
+{
+    findWeather(position.coords.latitude, position.coords.longitude);
+}
+
+function findWeather(lat, lon) {
+    let weatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+
+    let forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`;
+
+    fetch(weatherURL)
+    .then((response) => response.json())
+    .then((data) => outputWeather(data))
+    .catch((error) => console.error("Fetch error:", error));
+
+    fetch(forecastURL)
+    .then((response) => response.json())
+    .then((data) => outputForecast(data))
+    .catch((error) => console.error("Fetch error:", error));
+
+}
+
+function outputWeather(data) {
+    //console.log(data);
+
+    document.getElementById("o-city").textContent = `City name: ${data["name"]}`;
+    document.getElementById("o-lat").textContent = `Latitude: ${data["coord"]["lat"]}°`;
+    document.getElementById("o-lon").textContent = `Longitude: ${data["coord"]["lon"]}°`;
+
+    document.getElementById("o-temp").textContent = `Temperature: ${data["main"]["temp"]}°C`;
+    document.getElementById("o-feelslike").textContent = `Feels like: ${data["main"]["feels_like"]}°C`;
+    document.getElementById("o-humidity").textContent = `Humidity: ${data["main"]["humidity"]}%`;
+
+    //make first letter capital
+    /*let desc = data["weather"][0]["description"].split(" ");
+    for(var item of desc){
+        item[0] = item[0].toUpperCase();
+    }*/
+    document.getElementById("o-weatherdesc").textContent = `Weather description ${data["weather"][0]["description"]}`;//desc.join(" ")
+
+    document.getElementById("o-windspeed").textContent = `Wind speed: ${data["wind"]["speed"]}m/s`;
+}
+
+function outputForecast(data) {
+    console.log(data);
+
+    let text = "";
+    let text2 = "";
+    for(var item of data["list"])
+    {
+        if(item["dt_txt"].split(" ")[1].split(":")[0]=="12")
+        {
+            text += `${item["main"]["temp"]}°C, `;
+            text2 += `${item["weather"][0]["main"]}, `;
+        }
+
+    }
+    //text[text.length()-1]="";
+    //text2[text2.length()-1]="";
+    // each day at 12 in the list: 5 13 21 19 37
+
+    document.getElementById("o-wfctemp").textContent = `${text}`;
+    document.getElementById("o-wfcweather").textContent = `${text2}`;
+}    
